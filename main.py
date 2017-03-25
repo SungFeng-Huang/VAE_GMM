@@ -127,7 +127,8 @@ x_decoded = np.concatenate(x_gen)
 plt.figure(figsize=(6, 6))
 plt.scatter(x_decoded[:, 0], x_decoded[:, 1])
 ###plt.colorbar()
-plt.show()
+imgname = 'image\/' +str(n_gauss) + '_' +  str(n_hidden) + '*' + str(n_layer) + '+' + str(n_latent) + '_' + str(epsilon_std) + '.png'
+plt.savefig(imgname)
 #'''
 
 '''
