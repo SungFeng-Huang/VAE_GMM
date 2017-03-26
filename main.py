@@ -1,6 +1,9 @@
 '''This script demonstrates how to build a variational autoencoder with Keras.
 Reference: "Auto-Encoding Variational Bayes" https://arxiv.org/abs/1312.6114
 '''
+import os, sys
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -21,11 +24,23 @@ from lib import generateGMMs
 
 #####
 # settings
-n_gauss = 2
-n_latent = 2
-n_hidden = 256
-n_layer = 3
-nb_epoch = 500
+n_gauss = 4
+n_latent = 16
+n_hidden = 512
+n_layer = 6
+nb_epoch = 1000
+
+for i in range(len(sys.argv)):
+    if sys.argv[i] == "--gauss":
+        n_gauss = sys.argv[i+1]
+    elif sys.argv[i] == "--latent":
+        n_latent = sys.argv[i+1]
+    elif sys.argv[i] == "--hidden":
+        n_hidden = sys.argv[i+1]
+    elif sys.argv[i] == "--layer":
+        n_layer = sys.argv[i+1]
+    elif sys.argv[i] == "--epoch":
+        nb_epoch = sys.argv[i+1]
 
 n_dim = 2
 n_samples_train = 10000
