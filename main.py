@@ -43,9 +43,9 @@ epsilon_std = 1e-3
 x = Input(batch_shape=(batch_size, original_dim))
 h = x
 for i in range(n_layer):
-    h = Dropout(0.25)(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2(0.01))(h))
-z_mean = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2(0.01))(h)
-z_log_var = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2(0.01))(h)
+    h = Dropout(0.25)(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2())(h))
+z_mean = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2())(h)
+z_log_var = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2())(h)
 
 
 def sampling(args):
@@ -58,7 +58,7 @@ z = Lambda(sampling, output_shape=(latent_dim,))([z_mean, z_log_var])
 
 decoder_h = []
 for i in range(n_layer):
-    decoder_h.append(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2(0.01)))
+    decoder_h.append(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2()))
 decoder_mean = Dense(original_dim, activation='linear')
 h_decoded = z
 for i in range(n_layer):
