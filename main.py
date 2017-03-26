@@ -77,12 +77,7 @@ vae.summary()
 #####
 # make training/testing datas
 print('Generating data, takes around 25 secs')
-
-np.random.seed(112)
-GMMs_train = generateGMMs(n_gauss, n_dim, n_samples_train)
-print('Done generating training set')
-GMM = GMMs_train[0]
-mean, var, weight, samples, pdf = GMM.mean, GMM.var, GMM.weight, GMM.samples, GMM.pdf
+samples = np.load('train_gauss' + str(n_gauss) + '_0.npy')
 x_train = samples[:9000]
 x_valid = samples[9000:]
 
