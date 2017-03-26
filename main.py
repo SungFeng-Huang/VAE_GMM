@@ -32,15 +32,15 @@ nb_epoch = 1000
 
 for i in range(len(sys.argv)):
     if sys.argv[i] == "--gauss":
-        n_gauss = sys.argv[i+1]
+        n_gauss = int(sys.argv[i+1])
     elif sys.argv[i] == "--latent":
-        n_latent = sys.argv[i+1]
+        n_latent = int(sys.argv[i+1])
     elif sys.argv[i] == "--hidden":
-        n_hidden = sys.argv[i+1]
+        n_hidden = int(sys.argv[i+1])
     elif sys.argv[i] == "--layer":
-        n_layer = sys.argv[i+1]
+        n_layer = int(sys.argv[i+1])
     elif sys.argv[i] == "--epoch":
-        nb_epoch = sys.argv[i+1]
+        nb_epoch = int(sys.argv[i+1])
 
 n_dim = 2
 n_samples_train = 10000
