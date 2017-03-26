@@ -11,6 +11,7 @@ from keras.layers import Input, Dense, Lambda, Dropout
 from keras.models import Model
 from keras import backend as K
 from keras import objectives
+from keras import regularizers
 from keras.datasets import mnist
 
 from lib import generateGMMs
@@ -40,22 +41,22 @@ epsilon_std = 1e-3
 x = Input(batch_shape=(batch_size, original_dim))
 h = x
 for i in range(n_layer):
-    h = Dropout(0.25)(Dense(intermediate_dim, activation='relu', W_regularizer='l1l2')(h))
-z_mean = Dense(latent_dim, W_regularizer='l1l2')(h)
-z_log_var = Dense(latent_dim, W_regularizer='l1l2')(h)
+    h = Dropout(0.25)(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2(0.01))(h))
+z_mean = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2(0.01))(h)
+z_log_var = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2(0.01))(h)
 
 
 def sampling(args):
     z_mean, z_log_var = args
     epsilon = K.random_normal(shape=(batch_size, latent_dim), mean=0.,
-                              std=epsilon_std)
+                              stddev=epsilon_std)
     return z_mean + K.exp(z_log_var / 2) * epsilon
 
 z = Lambda(sampling, output_shape=(latent_dim,))([z_mean, z_log_var])
 
 decoder_h = []
 for i in range(n_layer):
-    decoder_h.append(Dense(intermediate_dim, activation='relu', W_regularizer='l1l2'))
+    decoder_h.append(Dense(intermediate_dim, activation='relu', kernel_regularizer=regularizers.l1_l2(0.01)))
 decoder_mean = Dense(original_dim, activation='linear')
 h_decoded = z
 for i in range(n_layer):
@@ -124,7 +125,7 @@ def update(i):
     # train vae
     vae.fit(x_train, x_train,
             shuffle=True,
-            nb_epoch=5,
+            epochs=5,
             batch_size=batch_size,
             validation_data=(x_valid, x_valid))
 
