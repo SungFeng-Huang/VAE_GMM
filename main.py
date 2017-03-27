@@ -29,6 +29,8 @@ n_latent = 16
 n_hidden = 512
 n_layer = 6
 nb_epoch = 1000
+epsilon_std = 1e-3
+std_decay = 0.9998
 
 for i in range(len(sys.argv)):
     if sys.argv[i] == "--gauss":
@@ -41,6 +43,8 @@ for i in range(len(sys.argv)):
         n_layer = int(sys.argv[i+1])
     elif sys.argv[i] == "--epoch":
         nb_epoch = int(sys.argv[i+1])
+    elif sys.argv[i] == "--stddev":
+        epsilon_std = float(sys.argv[i+1])
 
 n_dim = 2
 n_samples_train = 10000
@@ -50,7 +54,6 @@ batch_size = 100
 original_dim = n_dim
 latent_dim = n_latent
 intermediate_dim = n_hidden
-epsilon_std = 1e-3
 
 
 #####
@@ -65,6 +68,9 @@ z_log_var = Dense(latent_dim, kernel_regularizer=regularizers.l1_l2())(h)
 
 def sampling(args):
     z_mean, z_log_var = args
+
+    #global epsilon_std
+    #epsilon_std *= std_decay
     epsilon = K.random_normal(shape=(batch_size, latent_dim), mean=0.,
                               stddev=epsilon_std)
     return z_mean + K.exp(z_log_var / 2) * epsilon
@@ -131,8 +137,10 @@ decode = ax.scatter(x_decoded[:, 0], x_decoded[:, 1], color='blue')
 
 
 def update(i):
+    if i == 0:
+        return
     # Iteration i
-    print('Iteration ' + str(i+1) + '/' + str(int(math.floor(nb_epoch/5.0))))
+    print('Iteration ' + str(i) + '/' + str(int(math.floor(nb_epoch/5.0))))
 
     # train vae
     vae.fit(x_train, x_train,
@@ -151,10 +159,16 @@ def update(i):
     x_decoded = np.concatenate(x_gen)
     decode.set_offsets(x_decoded)
 
-anim = FuncAnimation(fig, update, frames=np.arange(1, int(math.floor(nb_epoch/5.0))), interval=50)
+    imgname = 'image/' + str(n_gauss) + '_' +  str(n_hidden) + '*' + str(n_layer) + '+' + \
+                str(n_latent) + '_' + str(epsilon_std) + '_epoch_' + str(i * 5) + '.png'
+    #plt.show()
+    print('Save img\n')
+    plt.savefig(imgname)
+
+anim = FuncAnimation(fig, update, frames=np.arange(0, int(math.floor(nb_epoch/5.0)+1)), interval=50)
 
 gifname = 'image/' + str(n_gauss) + '_' +  str(n_hidden) + '*' + str(n_layer) + '+' + \
-                str(n_latent) + '_' + str(epsilon_std) + '.gif'
+                str(n_latent) + '_' + str(epsilon_std) + '_' + str(nb_epoch) + '.gif'
 anim.save(gifname, dpi=fig.get_dpi(), writer='imagemagick')
 
 '''
